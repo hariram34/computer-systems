@@ -36,10 +36,10 @@ main(int argc, char* argv[])
 	
     char* usage = "Usage: ./sort input output\n";
     char* sorted = "\nSorted Output :\n";
-    int no,t=0;
+    int no;
     //struct stat buf;
     if(argc != 2){
-    t = write(1, usage, length(usage));
+    int t = write(1, usage, length(usage));
     if (t < 0) {
        // Checking your syscall return values is a
         // really good idea.
@@ -79,7 +79,7 @@ main(int argc, char* argv[])
     for(int i=0;i<no;i++){
 	char buff[10];     
 	sprintf(buff,"%d ",readbuf[i]);
-	t = write(1, buff, length(buff));
+	int t = write(1, buff, length(buff));
 	if (t < 0) {
         perror("write in main-sprintf ");
         _exit(1);
@@ -88,7 +88,7 @@ main(int argc, char* argv[])
 
     //printing sorted from write 
     printf("Printing sorted\n");
-    t = write(1, sorted, length(sorted));
+    int t = write(1, sorted, length(sorted));
     if (t < 0) {
        perror("write in main");
         _exit(1);
@@ -99,7 +99,7 @@ main(int argc, char* argv[])
     for(int i=0;i<no;i++){
 	char buff[10];     
 	sprintf(buff,"%d ",readbuf[i]);
-	t = write(1, buff, length(buff));
+	int t = write(1, buff, length(buff));
 	if (t < 0) {
         perror("write in main-sprintf ");
         _exit(1);
