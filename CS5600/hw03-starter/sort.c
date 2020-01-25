@@ -46,6 +46,7 @@ main(int argc, char* argv[])
         perror("write in main");
         _exit(1);
     }
+    }
     printf("Printing sorted\n");
     int t = write(1, sorted, length(sorted));
     /*int fd = open(argv[1],O_RDONLY);
