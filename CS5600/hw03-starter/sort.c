@@ -39,8 +39,8 @@ main(int argc, char* argv[])
     int no;
     //struct stat buf;
     if(argc != 2){
-    int t = write(1, usage, length(usage));
-    if (t < 0) {
+    int tt = write(1, usage, length(usage));
+    if (tt < 0) {
        // Checking your syscall return values is a
         // really good idea.
         perror("write in main");
