@@ -88,7 +88,7 @@ main(int argc, char* argv[])
     }
 
     //printing sorted from write 
-    printf("Printing sorted\n");
+    //printf("Printing sorted\n");
     int t = write(1, sorted, length(sorted));
     if (t < 0) {
        perror("write in main");
