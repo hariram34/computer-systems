@@ -10,12 +10,18 @@ main:
     cmp $3, %rdi
     jne label
  
-    mov $simple_msg, %rdi
-    call puts  // FIXME: That's not a syscall
+    mov $:1, %rax   // syscall 1: write
+    mov $1, %rdi   // fd 1: stdout
+    mov $simple_msg, %rsi
+    mov $13, %rdx   // strlen = 13
+    syscall
     jmp done
 label:    
-    mov $usage_msg, %rdi
-    call puts  // FIXME: That's not a syscall
+    mov $1, %rax   // syscall 1: write
+    mov $1, %rdi   // fd 1: stdout
+    mov $usage_msg, %rsi
+    mov $27, %rdx   // strlen = 27
+    syscall   
 done:
     mov $2, %rax
     leave

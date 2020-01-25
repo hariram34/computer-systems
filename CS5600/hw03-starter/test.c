@@ -7,33 +7,11 @@
 #include<sys/stat.h>
 #include<fcntl.h>
 
-void insertion_sort(int* arr, int N){
-for(int i =1;i<N;i++){
-	int key = arr[i],j=i-1;
-	while(j>=0 && arr[j]>key){
-		arr[j+1] = arr[j];
-		j = j-1;
-	}
-	arr[j+1] =  key;
-	}
-}
-
-int
-length(char* text)
-{
-    char* z;
-    int len=0;
-    for (z = text; *z; ++z){
-    	len++;
-    }
-   // printf("%d\n",len);    
-    return len;
-}
-
 int
 main(int argc, char* argv[])
 {   
 	
+    int readbuf[5]; //buffer to store the integers from file
     char* usage = "Usage: ./sort input output\n";
     char* sorted = "\nSorted Output :\n";
     int no;
@@ -49,18 +27,17 @@ main(int argc, char* argv[])
          perror("write in main");
         _exit(1);
     }
-    size_stat = buf.st_size;
     printf("address of size obtained through stat: %u\n,address of struct itself: %u \n",&buf.st_size,&buf);
-    //number of integers in the file 
-    no = size_stat/4;
-    int readbuf[no]; //buffer to store the integers from file
+
     //reading 20 bytes from file
-    int size = read(fd,readbuf,size_stat); 
+/*    int size = read(fd,readbuf,20); 
    // printf("size = %d\n",size);
      if (size < 0) {
          perror("write in main");
         _exit(1);
     }
+    //number of integers in the file 
+    no = size/4;
 
     //printing the integers from array
     for(int i=0;i<no;i++){
@@ -105,7 +82,7 @@ main(int argc, char* argv[])
     }
     }
 
-
+*/
     return 2;
 //    return 0;
 }
