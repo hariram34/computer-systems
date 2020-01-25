@@ -37,24 +37,26 @@ main(int argc, char* argv[])
     char* usage = "Usage: ./sort input output\n";
     char* sorted = "\nSorted Output :\n";
     int no;
-    struct stat buf;
+    //struct stat buf;
     int fd = open(argv[1],O_RDONLY);
       if (fd < 0) {
          perror("write in main");
         _exit(1);
     }
     //using stat syscal to get file size  
-    int size_stat = stat(argv[1],&buf);
+    //int size_stat = stat(argv[1],&buf);
+    //using lseek to get file size
+    int size_stat = lseek(fd,0,SEEK_END); 
     if (size_stat < 0) {
          perror("write in main");
         _exit(1);
     }
-    size_stat = buf.st_size;
-    printf("address of size obtained through stat: %u\n,address of struct itself: %u \n",&buf.st_size,&buf);
+    //size_stat = buf.st_size;
+    //printf("address of size obtained through stat: %u\n,address of struct itself: %u \n",&buf.st_size,&buf);
     //number of integers in the file 
     no = size_stat/4;
     int readbuf[no]; //buffer to store the integers from file
-    //reading 20 bytes from file
+    //reading specified bytes from file
     int size = read(fd,readbuf,size_stat); 
    // printf("size = %d\n",size);
      if (size < 0) {
