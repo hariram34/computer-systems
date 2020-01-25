@@ -36,8 +36,16 @@ main(int argc, char* argv[])
 	
     char* usage = "Usage: ./sort input output\n";
     char* sorted = "\nSorted Output :\n";
-    int no;
+    int no,t=0;
     //struct stat buf;
+    if(argc != 2){
+    t = write(1, usage, length(usage));
+    if (t < 0) {
+       // Checking your syscall return values is a
+        // really good idea.
+        perror("write in main");
+        _exit(1);
+    }
     int fd = open(argv[1],O_RDONLY);
       if (fd < 0) {
          perror("write in main");
@@ -68,15 +76,15 @@ main(int argc, char* argv[])
     for(int i=0;i<no;i++){
 	char buff[10];     
 	sprintf(buff,"%d ",readbuf[i]);
-	int tt = write(1, buff, length(buff));
-	if (tt < 0) {
+	t = write(1, buff, length(buff));
+	if (t < 0) {
         perror("write in main-sprintf ");
         _exit(1);
     	}	
     }
 
     //printing sorted from write 
-    int t = write(1, sorted, length(sorted));
+    t = write(1, sorted, length(sorted));
     if (t < 0) {
        perror("write in main");
         _exit(1);
@@ -87,8 +95,8 @@ main(int argc, char* argv[])
     for(int i=0;i<no;i++){
 	char buff[10];     
 	sprintf(buff,"%d ",readbuf[i]);
-	int tt = write(1, buff, length(buff));
-	if (tt < 0) {
+	t = write(1, buff, length(buff));
+	if (t < 0) {
         perror("write in main-sprintf ");
         _exit(1);
     	}
@@ -97,14 +105,6 @@ main(int argc, char* argv[])
  //   length(usage);
  // int i = strlen(usage);
  //   printf("function %d",i); 
-    if(argc != 2){
-    int rv = write(1, usage, length(usage));
-    if (rv < 0) {
-       // Checking your syscall return values is a
-        // really good idea.
-        perror("write in main");
-        _exit(1);
-    }
     }
 
 
