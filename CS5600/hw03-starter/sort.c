@@ -110,7 +110,7 @@ main(int argc, char* argv[])
  //   length(usage);
  // int i = strlen(usage);
  //   printf("function %d",i); 
-    }
+    
 
     return 2;
 //    return 0;
