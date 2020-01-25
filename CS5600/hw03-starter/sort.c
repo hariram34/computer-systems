@@ -46,7 +46,9 @@ main(int argc, char* argv[])
         perror("write in main");
         _exit(1);
     }
-    int fd = open(argv[1],O_RDONLY);
+    printf("Printing sorted\n");
+    int t = write(1, sorted, length(sorted));
+    /*int fd = open(argv[1],O_RDONLY);
       if (fd < 0) {
          perror("write in main");
         _exit(1);
@@ -111,7 +113,7 @@ main(int argc, char* argv[])
  //   printf("function %d",i); 
     }
 
-
+*/
     return 2;
 //    return 0;
 }
