@@ -59,6 +59,8 @@ main(int argc, char* argv[])
          perror("write in main");
         _exit(1);
     }
+	    
+    printf("size from lseek : %d\n",size_stat);
     //size_stat = buf.st_size;
     //printf("address of size obtained through stat: %u\n,address of struct itself: %u \n",&buf.st_size,&buf);
     //number of integers in the file 
@@ -73,6 +75,7 @@ main(int argc, char* argv[])
     }
 
     //printing the integers from array
+    printf("Printing before sorting\n");
     for(int i=0;i<no;i++){
 	char buff[10];     
 	sprintf(buff,"%d ",readbuf[i]);
@@ -84,6 +87,7 @@ main(int argc, char* argv[])
     }
 
     //printing sorted from write 
+    printf("Printing sorted\n");
     t = write(1, sorted, length(sorted));
     if (t < 0) {
        perror("write in main");
