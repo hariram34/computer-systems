@@ -49,7 +49,7 @@ loop:
 	cmp  $0, (%dl) 
 	je loop_exit_0
 	
-	cmp %sil, %dl
+	cmp %sil, (%dl)
 	jne loop_exit
 	
 continue:
