@@ -55,12 +55,6 @@ loop:
 continue:
 	//increment count value, this count should give the sting length in the end
 	inc %rcx 
-	push %rcx
-	mov $strlen, %rdi
-    	mov %rcx, %rsi
-    	mov $0, %al
-    	call printf
-	pop %rcx
 	jmp loop //repeat until we reach the string's end
 loop_exit:
 	mov %rcx, %rax  //return strlen
