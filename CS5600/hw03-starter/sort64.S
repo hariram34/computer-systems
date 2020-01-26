@@ -45,7 +45,7 @@ length:
 loop:
 	mov (%rdi,%rcx,1), %dl
 	cmp  $0, %dl 
-	jne loop_exit
+	jne loop_exit_0
 	
 	cmp %sil, %dl
 	je loop_exit
@@ -54,6 +54,11 @@ continue:
 	inc %rcx
 	jmp loop
 loop_exit:
+	mov %rcx, %rax 
+	leave 
+	ret
+loop_exit:
+	//mov %rcx, %rax 
 	leave 
 	ret
 	
