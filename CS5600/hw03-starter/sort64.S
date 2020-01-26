@@ -2,7 +2,7 @@
     .data
 usage_msg:  .string "Usage: ./sort input output\n"
 simple_msg:  .string "we are done!\n"
-strlen: .string "strlen = %d\n"
+strlen: .string "file size = %d\n"
 input: .string "num.dat"
 output: .string "output.dat"
 ERROR: .string "ERROR\n"
@@ -34,7 +34,7 @@ main:
 	mov %rax, %r15			//preserve file size
 	
 	mov $strlen, %rdi
-	mov %rax, %rsi
+	mov %r15, %rsi
 	call printf
     
 	//done
