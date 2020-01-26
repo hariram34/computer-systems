@@ -38,7 +38,7 @@ done:
     ret
 length:
 	enter $0,$0
-	mov $1, rax //rax will hold strlen
+	mov $1, %rax //rax will hold strlen
 	mov $0,%rcx //count value
 	mov $'\0, %rsi
 
