@@ -50,7 +50,7 @@ loop:
 	je loop_exit
 	
 	cmp %sil, %dl
-	jne loop_exit_0
+	je loop_exit_0
 	
 continue:
 	inc %rcx
