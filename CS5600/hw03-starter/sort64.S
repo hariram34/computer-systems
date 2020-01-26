@@ -28,7 +28,7 @@ main:
     syscall
     jmp done
 label:    
-    mov $simple_msg, %rdi	//find strlen			
+    mov $usage_msg, %rdi	//find strlen			
     call length			//preserve strlen
     mov %rax,%r12
     
