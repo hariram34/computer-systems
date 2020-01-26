@@ -42,6 +42,11 @@ length:
 	mov $1, %rax //rax will hold strlen
 	mov $0,%rcx //count value
 	mov $'\0, %rsi
+	
+	mov $strlen_d, %rdi
+    	mov $10, %rsi
+    	mov $0, %al
+    	call printf
 
 loop:
 	mov (%rdi,%rcx,1), %dl
