@@ -3,7 +3,7 @@
 usage_msg:  .string "Usage: ./sort input output\n"
 simple_msg:  .string "we are done!\n"
 strlen: .string "file size = %d\n"
-input: .string "num.dat"
+input: .string "test.dat"
 output: .string "output.dat"
 ERROR: .string "ERROR\n"
 
@@ -14,7 +14,7 @@ main:
     cmp $3, %rdi
     jne usage_fault
     
-	//SYSCALL_OPEN
+    //SYSCALL_OPEN
     mov $input, %rdi
     mov $0, %rsi     		// 0 = O_RDONLY
     mov $0, %rdx     		// third arg, unused
@@ -25,9 +25,9 @@ main:
     cmp $0, %rax
     jl  error_opening_file
 	
-	//Getting file size using SYSCALL_LSEEK
-	mov $8, %rax   			// syscall 8: lseek
-    mov %r14, %rdi   		// fd in r14
+    //Getting file size using SYSCALL_LSEEK
+    mov $8, %rax   			// syscall 8: lseek
+    mov %r14, %rdi   			// fd in r14
     mov $0, %rsi			//offset
     mov $2, %rdx   		    // SEEK_END = 2, till EOF
     syscall
