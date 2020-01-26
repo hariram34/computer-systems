@@ -3,14 +3,14 @@
 usage_msg:  .string "Usage: ./sort input output\n"
 simple_msg:  .string "we are done!\n"
 strlen: .string "file size = %d\n"
-input: .string "test.dat"
+input: .string "num.dat"
 output: .string "output.dat"
 ERROR: .string "ERROR\n"
 
 
     .text
 main:
-    enter $0, $0
+    enter $32, $0
     //push %r12
     push %r14
     push %r15
@@ -28,7 +28,7 @@ main:
     cmp $0, %rax
     jl  error_opening_file
 	
-    //Getting file size using SYSCALL_LSEEK
+   /* //Getting file size using SYSCALL_LSEEK
     mov $8, %rax   			// syscall 8: lseek
     mov %r14, %rdi   			// fd in r14
     mov $0, %rsi			//offset
@@ -38,6 +38,20 @@ main:
 	
 	mov $strlen, %rdi
 	mov %r15, %rsi
+	call printf
+*/
+
+ 	//SYSCALL_READ
+	mov %r14, %rdi     // fd
+    lea 0(%rsp), %rsi  // buffer is read_buf
+    mov $20, %rdx     // buffer size
+    mov $0, %rax       // syscall 0 = read
+    syscall
+    mov %rax, %r15     // # of bytes read
+
+	mov $strlen, %rdi
+	mov %rax, %rsi
+	mov $0, %al
 	call printf
     
 	//done
