@@ -57,7 +57,7 @@ loop_exit:
 	mov %rcx, %rax 
 	leave 
 	ret
-loop_exit:
+loop_exit_0:
 	//mov %rcx, %rax 
 	leave 
 	ret
