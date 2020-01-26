@@ -46,20 +46,20 @@ length:
 
 loop:
 	mov (%rdi,%rcx,1), %dl
-	cmp  $0, (%dl) 
+	cmp  $0, %dl 
 	je loop_exit_0
 	
-	cmp %sil, (%dl)
+	cmp %sil, %dl
 	jne loop_exit
 	
 continue:
 	inc %rcx
-	
+	push %rcx
 	mov $strlen, %rdi
     	mov %rcx, %rsi
     	mov $0, %al
     	call printf
-	
+	pop %rcx
 	jmp loop
 loop_exit:
 	mov %rcx, %rax 
