@@ -45,28 +45,29 @@ length:
 	mov $'\0, %rsi
 
 loop:
-	mov (%rdi,%rcx,1), %dl
-	cmp  $0, %dl 
+	mov (%rdi,%rcx,1), %dl // mov 1 byte(char) from rdi to dl(lower 8 bits)
+	cmp  $0, %dl  //if nothing exit
 	je loop_exit
 	
-	cmp %sil, %dl
-	je loop_exit_0
+	cmp %sil, %dl //compare if the string has reached it's end
+	je loop_exit_0 //if yes exit
 	
 continue:
-	inc %rcx
-	/*push %rcx
+	//increment count value, this count should give the sting length in the end
+	inc %rcx 
+	push %rcx
 	mov $strlen, %rdi
     	mov %rcx, %rsi
     	mov $0, %al
     	call printf
-	pop %rcx*/
-	jmp loop
+	pop %rcx
+	jmp loop //repeat until we reach the string's end
 loop_exit:
-	mov %rcx, %rax 
+	mov %rcx, %rax  //return strlen
 	leave 
 	ret
 loop_exit_0:
-	mov $10, %rax 
+	mov $0, %rax 
 	leave 
 	ret
 	
