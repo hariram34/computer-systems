@@ -42,7 +42,7 @@ length:
 	mov $0,%rcx //count value
 loop:
 	mov (%rdi,%rcx,1),%dl
-	cmpb $'\0, %dl //check for end of string
+	//cmpb $'\0, %dl //check for end of string
 	jne loop_exit
 	
 continue:
