@@ -50,24 +50,24 @@ loop:
 	je loop_exit
 	
 	cmp %sil, %dl
-	jne loop_exit
+	jne loop_exit_0
 	
 continue:
 	inc %rcx
-	push %rcx
+	/*push %rcx
 	mov $strlen, %rdi
     	mov %rcx, %rsi
     	mov $0, %al
     	call printf
-	pop %rcx
+	pop %rcx*/
 	jmp loop
 loop_exit:
 	mov %rcx, %rax 
 	leave 
 	ret
-/*loop_exit_0:
-	//mov %rcx, %rax 
+loop_exit_0:
+	mov $10, %rax 
 	leave 
-	ret*/
+	ret
 	
  
