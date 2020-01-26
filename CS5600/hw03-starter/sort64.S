@@ -39,10 +39,6 @@ done:
     ret
 length:
 	enter $0,$0
-	mov $strlen_d, %rdi
-    	mov $10, %rsi
-    	mov $0, %al
-    	call printf
 	
 	mov $1, %rax //rax will hold strlen
 	mov $0,%rcx //count value
@@ -67,12 +63,6 @@ continue:
 	jmp loop
 loop_exit:
 	mov %rcx, %rax 
-	
-	mov $strlen_d, %rdi
-    	mov %rcx, %rsi
-    	mov $0, %al
-    	call printf
-	
 	leave 
 	ret
 loop_exit_0:
