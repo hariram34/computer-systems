@@ -52,6 +52,12 @@ loop:
 	
 continue:
 	inc %rcx
+	
+	mov $strlen, %rdi
+    	mov %rcx, %rsi
+    	mov $0, %al
+    	call printf
+	
 	jmp loop
 loop_exit:
 	mov %rcx, %rax 
