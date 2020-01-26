@@ -51,10 +51,10 @@ length:
 loop:
 	mov (%rdi,%rcx,1), %dl
 	cmp  $0, %dl 
-	jne loop_exit_0
+	je loop_exit_0
 	
 	cmp %sil, %dl
-	je loop_exit
+	jne loop_exit
 	
 continue:
 	inc %rcx
