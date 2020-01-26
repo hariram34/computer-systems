@@ -3,6 +3,7 @@
 usage_msg:  .string "Usage: ./sort input output\n"
 simple_msg:  .string "we are done!\n"
 strlen: .string "strlen = %d\n"
+strlen_d: .string "strlen_d = %d\n"
 
 
     .text
@@ -61,6 +62,12 @@ continue:
 	jmp loop
 loop_exit:
 	mov %rcx, %rax 
+	
+	mov $strlen_d, %rdi
+    	mov %rcx, %rsi
+    	mov $0, %al
+    	call printf
+	
 	leave 
 	ret
 loop_exit_0:
