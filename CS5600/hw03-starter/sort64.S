@@ -3,7 +3,9 @@
 usage_msg:  .string "Usage: ./sort input output\n"
 simple_msg:  .string "we are done!\n"
 strlen: .string "strlen = %d\n"
-strlen_d: .string "strlen_d = %d\n"
+input: .string "num.dat"
+output: .string "output.dat"
+open_file: .string "Bad file descriptor\n"
 
 
     .text
@@ -12,21 +14,27 @@ main:
     cmp $3, %rdi
     jne label
     
+    mov $input, %rdi
+    mov $0, %rsi     		// 0 = O_RDONLY
+    mov $0, %rdx     		// third arg, unused
+    mov $2, %rax     		// syscall 2 = open
+    syscall
+    mov %rax, %r14   		// new fd
+    
+    cmp $0, %rax
+    jl  error_opening_file
+    
     mov $simple_msg, %rdi
     call length			//find strlen
-    mov %rax,%r12 		//preserve strlen
-	
-    /*mov $strlen, %rdi		//for testing purpose only
-    mov %rax, %rsi
-    mov $0, %al
-    call printf*/
-	
+    mov %rax,%r12 		//preserve strlen 
+
     mov $1, %rax   		// syscall 1: write
     mov $1, %rdi   		// fd 1: stdout
     mov $simple_msg, %rsi
     mov %r12, %rdx   		// strlen = 13
     syscall
     jmp done
+	
 label:    
     mov $usage_msg, %rdi	//find strlen			
     call length			//preserve strlen
@@ -36,11 +44,26 @@ label:
     mov $1, %rdi  		// fd 1: stdout
     mov $usage_msg, %rsi
     mov %r12, %rdx  		// strlen = 27
-    syscall   
+    syscall 
+	jmp done
+	
+error_opening_file:
+	mov $open_file, %rdi
+    call length			//find strlen
+    mov %rax,%r12 		//preserve strlen 
+
+    mov $1, %rax   		// syscall 1: write
+    mov $1, %rdi   		// fd 1: stdout
+    mov $open_file, %rsi
+    mov %r12, %rdx   		// strlen = 13
+    syscall
+	
 done:
     mov $2, %rax
     leave
     ret
+	
+//string length function
 length:
 	enter $0,$0
 	
