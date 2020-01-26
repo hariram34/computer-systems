@@ -11,7 +11,7 @@ ERROR: .string "ERROR\n"
     .text
 main:
     enter $0, $0
-    push %r12
+    //push %r12
     push %r14
     push %r15
     cmp $3, %rdi
@@ -78,9 +78,9 @@ error_opening_file:
 	
 done:
     mov $2, %rax
-    push %r15
-    push %r14
-    push %r12
+    pop %r15
+    pop %r14
+    //pop %r12
     leave
     ret
 	
