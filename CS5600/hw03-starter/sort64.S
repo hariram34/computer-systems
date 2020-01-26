@@ -15,10 +15,10 @@ main:
     call length
     mov %rax,%r12
 	
-	mov $strlen, %rdi
-	mov %rax, %rsi
-	mov $0, %al
-	call printf
+    mov $strlen, %rdi
+    mov %rax, %rsi
+    mov $0, %al
+    call printf
 	
     mov $1, %rax   // syscall 1: write
     mov $1, %rdi   // fd 1: stdout
@@ -40,10 +40,15 @@ length:
 	enter $0,$0
 	mov $1, rax //rax will hold strlen
 	mov $0,%rcx //count value
+	mov $'\0, %rsi
+
 loop:
-	mov (%rdi,%rcx,1),%dl
-	//cmpb $'\0, %dl //check for end of string
+	mov (%rdi,%rcx,1), %dl
+	cmp  $0, %dl 
 	jne loop_exit
+	
+	cmp %sil, %dl
+	je loop_exit
 	
 continue:
 	inc %rcx
