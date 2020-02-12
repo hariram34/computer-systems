@@ -181,7 +181,7 @@ main(void)
     {
       exit();
     }
-    size = buf.st_size;
+    size = buff.st_size;
     printf("size of file = %d\n", size);
 
       continue;
