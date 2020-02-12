@@ -1,5 +1,7 @@
 // Shell.
-
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "types.h"
 #include "user.h"
 #include "fcntl.h"
@@ -146,7 +148,8 @@ main(void)
 {
   static char buf[100];
   int fd;
-
+  struct stat buff;
+  int size;
   // Ensure that three file descriptors are open.
   while((fd = open("console", O_RDWR)) >= 0){
     if(fd >= 3){
@@ -162,6 +165,26 @@ main(void)
       buf[strlen(buf)-1] = 0;  // chop \n
       if(chdir(buf+3) < 0)
         printf(2, "cannot cd %s\n", buf+3);
+      continue;
+    }
+     if(buf[0] == 's' && buf[1] == 'h' && buf[2] == ' '){
+      // Chdir must be called by the parent, not the child.
+      buf[strlen(buf)-1] = 0;  // chop \n
+      if(chdir(buf+3) < 0)
+        printf(2, "cannot sh %s\n", buf+3);
+      fd = open(buf+3, O_RDONLY);
+      if(fd<-1)
+      {
+        exit();
+      }
+      
+    if(fstat(fd,&buff) < 0) 
+    {
+      exit();
+    }
+    size = buf.st_size;
+    printf("size of file = %d\n", size);
+
       continue;
     }
     if(fork1() == 0)
