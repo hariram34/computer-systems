@@ -1,117 +1,90 @@
-
-#include <unistd.h>
-#include <stdio.h> // for perror
+#include<stdio.h>
+#include<unistd.h>
+#include <errno.h>
 #include<string.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <stdlib.h>
 
-#include<sys/types.h>
-#include<sys/stat.h>
-#include<fcntl.h>
-
-void insertion_sort(int* arr, int N){
-for(int i =1;i<N;i++){
-	int key = arr[i],j=i-1;
-	while(j>=0 && arr[j]>key){
-		arr[j+1] = arr[j];
-		j = j-1;
-	}
-	arr[j+1] =  key;
-	}
-}
-
-int
-length(char* text)
+//utility fn to calc strlen
+int strlength(char *string)
 {
-    char* z;
-    int len=0;
-    for (z = text; *z; ++z){
-    	len++;
+    int count=0;
+    for (int i = 0; string[count] != 0 ; i++){
+        count++;
     }
-   // printf("%d\n",len);    
-    return len;
+    return count; //return strlen
 }
 
-int
-main(int argc, char* argv[])
-{   
-	
-    char* usage = "Usage: ./sort input output\n";
-    char* sorted = "\nSorted Output :\n";
-    int no;
-    //struct stat buf;
-    if(argc != 2){
-    int tt = write(1, usage, length(usage));
-    if (tt < 0) {
-       // Checking your syscall return values is a
-        // really good idea.
-        perror("write in main");
-        _exit(1);
-    }
-    }
-    int fd = open(argv[1],O_RDONLY);
-      if (fd < 0) {
-         perror("write in main");
-        _exit(1);
-    }
-    //using stat syscal to get file size  
-    //int size_stat = stat(argv[1],&buf);
-    //using lseek to get file size
-    int size_stat = lseek(fd,0,SEEK_END); 
-    if (size_stat < 0) {
-         perror("write in main");
-        _exit(1);
-    }
-	    
-    printf("size from lseek : %d\n",size_stat);
-    //size_stat = buf.st_size;
-    //printf("address of size obtained through stat: %u\n,address of struct itself: %u \n",&buf.st_size,&buf);
-    //number of integers in the file 
-    no = size_stat/4;
-    int readbuf[no]; //buffer to store the integers from file
-    //reading specified bytes from file
-    int size = read(fd,readbuf,size_stat); 
-   // printf("size = %d\n",size);
-     if (size < 0) {
-         perror("write in main");
-        _exit(1);
-    }
-
-    //printing the integers from array
-    printf("Printing before sorting\n");
-    for(int i=0;i<no;i++){
-	char buff[10];     
-	sprintf(buff,"%d ",readbuf[i]);
-	int t = write(1, buff, length(buff));
-	if (t < 0) {
-        perror("write in main-sprintf ");
-        _exit(1);
-    	}	
-    }
-
-    //printing sorted from write 
-    //printf("Printing sorted\n");
-    int t = write(1, sorted, length(sorted));
-    if (t < 0) {
-       perror("write in main");
-        _exit(1);
-    }
+//sorting algorithm
+void insertion_sort(int *arr, int len)
+{
     
-    insertion_sort(readbuf,no);
-
-    for(int i=0;i<no;i++){
-	char buff[10];     
-	sprintf(buff,"%d ",readbuf[i]);
-	int t = write(1, buff, length(buff));
-	if (t < 0) {
-        perror("write in main-sprintf ");
-        _exit(1);
-    	}
+    for (int i=1; i<len; i++)  
+    {
+        int key = arr[i];
+    	int j=i-1;           
+        while(j>=0 && arr[j]>key) //check conditions
+        {
+            arr[j+1] = arr[j];    
+            j--;
+        }
+        arr[j+1] = key;   //assign key in its position
     }
-	printf("\n");
- //   length(usage);
- // int i = strlen(usage);
- //   printf("function %d",i); 
-    
+}
 
-    return 2;
-//    return 0;
+int main(int argc, char* argv[]){
+ //fstat structure instance is created
+struct stat buf;
+char* usage = "Usage: ./sort input output\n";
+if(argc!=3){
+        write(1, usage, strlength(usage));
+        exit(1);
+} 
+
+int ifd = open(argv[1], O_RDONLY); //fd for input file 
+//check if file is opened succesfully or not
+if(ifd<0){
+char* err = strerror(errno);
+write(2, err, strlength(err));
+exit(1);
+}
+
+//get file size using fstat
+int y = fstat(ifd, &buf);
+//check for success
+if( y < -1){
+char* err = strerror(errno);
+write(2, err, strlength(err));
+exit(1);
+}
+ int size = buf.st_size; //accessing size of file from stuct
+ int n = size/4; //calc no of elements, since 32 bits, divide by 4
+ int readbuff[n];
+ int rx = read(ifd, readbuff, size); //read and store in array
+ if(rx<1)
+ {
+  char* err = strerror(errno);
+  write(2, err, strlength(err));    
+  exit(1);
+ }   
+ close(ifd);
+ insertion_sort(readbuff, n); //sort
+//creating output file to write 
+int ofd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0644);  //create op file
+ if(ofd<0)
+ {
+     char* err = strerror(errno);
+     write(2, err, strlength(err));
+     exit(1);
+ }
+ int x=write(ofd, readbuff, size);
+if(x<1){
+char* err = strerror(errno);
+write(2, err, strlength(err));    
+exit(1);
+}
+close(ofd);
+return 0;
 }
