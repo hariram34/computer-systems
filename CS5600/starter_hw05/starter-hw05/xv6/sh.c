@@ -1,7 +1,4 @@
 // Shell.
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include "types.h"
 #include "user.h"
 #include "fcntl.h"
