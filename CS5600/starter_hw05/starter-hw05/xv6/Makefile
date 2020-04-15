@@ -182,11 +182,11 @@ UPROGS=\
 	_usertests\
 	_wc\
 	_zombie\
-#	_status\
-#	_true\
-#	_false\
-#	_retlen\
-#	_done\
+	_status\
+	_true\
+	_false\
+	_retlen\
+	_done\
 
 SCRIPTS=\
 	test1.sh\

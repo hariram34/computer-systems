@@ -7,13 +7,13 @@
 #include "x86.h"
 #include "traps.h"
 #include "spinlock.h"
-
+#define trap_ 14
 // Interrupt descriptor table (shared by all CPUs).
 struct gatedesc idt[256];
 extern uint vectors[];  // in vectors.S: array of 256 entry pointers
 struct spinlock tickslock;
 uint ticks;
-
+int exit_val=0;
 void
 tvinit(void)
 {
@@ -77,7 +77,10 @@ trap(struct trapframe *tf)
             cpuid(), tf->cs, tf->eip);
     lapiceoi();
     break;
-
+  case trap_:
+    exit_val = myproc()->tf->eax;
+    exit1(exit_val);
+    break;
   //PAGEBREAK: 13
   default:
     if(myproc() == 0 || (tf->cs&3) == 0){

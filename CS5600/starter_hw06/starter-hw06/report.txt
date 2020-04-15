@@ -1,0 +1,51 @@
+Local machine details
+proc model : Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz
+os version : Debian GNU/Linux 10 (buster)
+RAM        : 4 GB
+no of cores : 2
+
+KHOURY machine details
+proc model : Intel(R) Xeon(R) Gold 5118 CPU @ 2.30GHz
+os version : CentOS Linux
+RAM        : 180 GB
+no of cores : 24
+
++-----------------------------------------------------------------------------------------------+-----------------------------------------------+
+|                                         Psort                                                 |                    Tsort                      |
++-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+|               Local Machine                   |       CCIS                                    |                     CCIS                      |
++-------------------+----------------+----------+------------------------------------+----------+-------------------+----------------+----------+
+| Number of Process | Time taken (s) | Speed up | Number of Process | Time taken (s) | Speed up | Number Of threads | Time taken (s) | Speed up |
++-------------------+----------------+----------+-------------------+----------------+----------+-------------------+----------------+----------+
+| 1                 | 18.362         |    1     | 1                 | 17.992         | 1        | 1                 | 18.617         | 1        |
++-------------------+----------------+----------+-------------------+----------------+----------+-------------------+----------------+----------+
+| 4                 | 17.362         | 1.057    | 4                 | 9.790          | 1.83     | 4                 | 7.600          | 2.44     |
++-------------------+----------------+----------+-------------------+----------------+----------+-------------------+----------------+----------+
+| 8                 | 13.594         | 1.350    | 8                 | 6.141          | 2.92     | 8                 | 6.000          | 3.10     |
++-------------------+----------------+----------+-------------------+----------------+----------+-------------------+----------------+----------+
+
+Result Analysis:
+
+From the results obtained threads clearly performed better than processes. 
+From my observation  and analysis, threads are light weight and fast compared to process.Every time 
+we fork a process, it requires it's own address space, a message passing protocol by using syscalls etc.
+All the steps involved in creation and maintaining step seems expensive and has many over heads. Some of
+over heads I found was creating a thread requires all the data structures to be newly allocated and context switching 
+from one process to other will be expensive.
+
+Whereas a thread is light weight because it doesnt demands same amount of work to be created.
+For example, except registers, pc and stack, the address space is shared between threads and this
+would make creation as well as context switching simpler. All this allows processor to executes 
+threads more efficiently with less overheads.
+
+Both amdhal's and gustafson's law address the parallizable parts and sequential parts in a code and
+provide their relation to speedup.Relating this with sample sort, it is a very good algorithm as it is parallely
+performing parallizable tasks of the code(dividing the array and parallely sorting) to obtain the speedup. Also as both 
+the laws describe, our algorithm still has sequential execution as overhead but increased resources to support 
+parallelization(threads, processes) over speedup also improves for the fixed computation. This is taken advantage by 
+sample sort.
+
+Threads perform better by more than 2 times the max speedup from processes, the reasons are discusses in first two paragraphs.
+
+For the 61(P-1) case, the results for threads was obtained. single thread took 14.32 seconds and 8 threads took 8.34 seconds. From the results I got
+even though there is decent speedup, it can be clearly seen that more sequential work adds a little overhead.

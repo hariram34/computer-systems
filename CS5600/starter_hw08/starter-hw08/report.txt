@@ -1,0 +1,38 @@
+
+1. Overall the optimized allocator was faser than xv6.
+Their real time values is given below. The optimized allocator is 2.5 times faster than
+xv6 allocatorfor list and 3.3 times for ivec.
+----------------- ----------- ----------------
+                 |  XV6      |      OPT
+----------------- ----------- ----------------
+list : 10000     |  10.649   |  4.020
+------------------ ---------------------------
+ivec : 13000     |  10.104   |  3.153
+------------------ ---------------------------
+2. The comparison table between system and optimized allocator is given below.
+It can be seen that system allocator is faster than the optimized allocator.It can also 
+be noted that ivec is a lot faster compared lists. For lits the system allocator was 3 times 
+faster and for ivec is 2 times faster.
+----------------- ----------- ----------------
+                 |  SYS      |      OPT
+----------------- ----------- ----------------
+list : 20000     |  3.043    |  10.320
+------------------ ---------------------------
+ivec : 12000     |  5.876    |  10.052
+------------------ ---------------------------
+2.The slowest allocator was xv6 and it took 10 seconds(20k). The fastest allocator 
+was system allocator and it was 1.6 times faster than the system allocator and 1.25 faster than optimized.
+--------- ------------ ------------- ------------
+TOP       |  SYS      |      OPT    |      XV6   
+--------- ------------ ------------- ------------
+20000     |  6.165    |  8.567      |  10.812     
+---------------------- --------------------------
+
+3. The technique I used was bucket based allocator. Instead of having a single large list
+the list was split into buckets to speedup searching. It uses a same freelist to reuse the memory.
+
+4. One of the significant challenges was with mutexes and debugging memory issues. Locking and unlocking
+mutexes was tedious and hard to debug.
+
+5. I would use a better design as this does not garauntee best performance in all cases.
+The list could get piled into a single bucket if user request same sizes.

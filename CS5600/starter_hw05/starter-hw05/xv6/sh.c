@@ -1,18 +1,34 @@
 // Shell.
+
 #include "types.h"
 #include "user.h"
 #include "fcntl.h"
 #include "stat.h"
-
-
+//#include "ulib.c"
 // Parsed command representation
 #define EXEC  1
 #define REDIR 2
 #define PIPE  3
 #define LIST  4
 #define BACK  5
+#define AND   6
+#define OR    7
 
 #define MAXARGS 10
+#define icount 100
+
+/**********README********
+Feature : History command
+Usage : his
+The feature I added is simple queue that maintains the history of last
+100 commands used
+
+*************************/
+
+//variable to store index
+int ind = 0;
+//variable to store history commands
+char history[100][50];
 
 struct cmd {
   int type;
@@ -50,6 +66,8 @@ struct backcmd {
   struct cmd *cmd;
 };
 
+int script = 0;
+
 int fork1(void);  // Fork but panics on failure.
 void panic(char*);
 struct cmd *parsecmd(char*);
@@ -59,6 +77,9 @@ void
 runcmd(struct cmd *cmd)
 {
   int p[2];
+  int exit_val=0;
+  int flag1 = 0;
+  int flag2 = 0;
   struct backcmd *bcmd;
   struct execcmd *ecmd;
   struct listcmd *lcmd;
@@ -118,8 +139,9 @@ runcmd(struct cmd *cmd)
     }
     close(p[0]);
     close(p[1]);
-    wait();
-    wait();
+    wait1(&flag1);
+    wait1(&flag2);
+    exit_val = flag1 | flag2;
     break;
 
   case BACK:
@@ -127,8 +149,48 @@ runcmd(struct cmd *cmd)
     if(fork1() == 0)
       runcmd(bcmd->cmd);
     break;
+
+  case AND:
+    lcmd = (struct listcmd*)cmd;
+    if(fork() == 0) 
+      runcmd(lcmd->left);
+    wait1(&exit_val);
+    if(exit_val == 0)
+      runcmd(lcmd->right);
+    break;
+
+  case OR:
+      lcmd = (struct listcmd*)cmd;
+    if(fork() == 0) 
+      runcmd(lcmd->left);
+    wait1(&exit_val);
+    if(exit_val != 0)
+      runcmd(lcmd->right);
+    break;
   }
-  exit();
+
+  if(exit_val)
+    exit1(exit_val);
+  else
+    exit();
+}
+
+void
+strcat_(char (*dest)[50], char* source) {
+  int len = 0,i=0;
+  //printf("len = %s\n",dest);
+  char* t = source;
+  //printf("len = %s\n",t);
+  while(dest[0][len]!=0){
+      len++;
+  }
+  while(t[i]!=0){   
+      dest[0][len] = t[i];
+      ++i;
+      ++len;
+  }
+  //t[len+1] = '\0';
+  
 }
 
 int
@@ -141,14 +203,68 @@ getcmd(char *buf, int nbuf)
     return -1;
   return 0;
 }
+//function to print history
+void print_history(){
+  for(int i=0;i<icount;i++){
+    if(history[i]){
+      printf(2, "%s",history[i]);
+    }
+  }
+}
 
 int
-main(void)
+main(int argc, char *argv[])
 {
   static char buf[100];
   int fd;
-  struct stat buff;
-  int size;
+  struct stat statbuf;
+  int length;
+  int exit_value;
+  int start = 0, end = 0;
+
+  
+  if(argc == 2)
+    {
+      //conacatane the arguments and store in the history queue
+      strcat_(history, argv[0]);
+  
+      strcat_(history, " ");
+  
+      strcat_(history, argv[1]);
+  
+      //printf(2,"%s\n",history[ind]);
+      //when history queue overflows, it starts again from beginning retaining old values
+      ind = (ind+1)%icount;
+      int fd = open(argv[1], O_RDONLY);
+      if(fd<0)
+        printf(2, "Error in opening file");
+     
+    if(fstat(fd, &statbuf)){
+      return -1;  
+    }
+    int sizee = statbuf.size;
+    char buf[sizee];
+    length =  read(fd,buf, sizee);
+
+    while(end<=length){
+          if(*(buf + end) == '\n')     
+          {
+            buf[end] = 0;
+            if(fork() == 0)
+              runcmd(parsecmd(&buf[start])); 
+             
+            wait1(&exit_value);
+            start = end+1;
+          }
+          end++;
+     }
+    exit1(exit_value);
+    close(fd);
+    return 0;
+      
+    }
+
+
   // Ensure that three file descriptors are open.
   while((fd = open("console", O_RDWR)) >= 0){
     if(fd >= 3){
@@ -159,31 +275,24 @@ main(void)
 
   // Read and run input commands.
   while(getcmd(buf, sizeof(buf)) >= 0){
+    //copy commands into history queue
+    int i = 0;
+    char* temp = buf;
+    while(temp[i]!=0){
+    history[ind][i] = temp[i];
+    i++;
+    }
+    //printf(2,"%s\n",history[ind]);
+     ind = (ind+1)%icount;
+    if(buf[0] == 'h' && buf[1] == 'i' && buf[2] == 's'){
+      print_history();
+      continue;
+    }
     if(buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' '){
       // Chdir must be called by the parent, not the child.
       buf[strlen(buf)-1] = 0;  // chop \n
       if(chdir(buf+3) < 0)
         printf(2, "cannot cd %s\n", buf+3);
-      continue;
-    }
-     if(buf[0] == 's' && buf[1] == 'h' && buf[2] == ' '){
-      // Chdir must be called by the parent, not the child.
-      buf[strlen(buf)-1] = 0;  // chop \n
-      if(chdir(buf+3) < 0)
-        printf(2, "cannot sh %s\n", buf+3);
-      fd = open(buf+3, O_RDONLY);
-      if(fd<-1)
-      {
-        exit();
-      }
-      
-    if(fstat(fd,&buff) < 0) 
-    {
-      exit();
-    }
-    size = buff.st_size;
-    printf("size of file = %d\n", size);
-
       continue;
     }
     if(fork1() == 0)
@@ -266,7 +375,29 @@ listcmd(struct cmd *left, struct cmd *right)
   cmd->right = right;
   return (struct cmd*)cmd;
 }
+struct cmd*
+and_cmd(struct cmd *left, struct cmd *right)
+{
+  struct listcmd *cmd;
+  cmd = malloc(sizeof(*cmd));
+  memset(cmd, 0, sizeof(*cmd));
+  cmd->type = AND;
+  cmd->left = left;
+  cmd->right = right;
+  return (struct cmd*)cmd;
+}
 
+struct cmd*
+or_cmd(struct cmd *left, struct cmd *right)
+{
+  struct listcmd *cmd;
+  cmd = malloc(sizeof(*cmd));
+  memset(cmd, 0, sizeof(*cmd));
+  cmd->type = OR;
+  cmd->left = left;
+  cmd->right = right;
+  return (struct cmd*)cmd;
+}
 struct cmd*
 backcmd(struct cmd *subcmd)
 {
@@ -300,10 +431,24 @@ gettoken(char **ps, char *es, char **q, char **eq)
   case 0:
     break;
   case '|':
+  //same logic as >>, if | occurs, check for the other |
+    s++;
+    if(*s=='|'){
+      ret = '%';
+      s++;
+    }
+    break;
   case '(':
   case ')':
   case ';':
   case '&':
+  //same logic as >>, if & occurs, check for the other &
+     s++;
+    if(*s=='&'){
+      ret = '@';
+      s++;
+    }
+    break;
   case '<':
     s++;
     break;
@@ -333,7 +478,6 @@ int
 peek(char **ps, char *es, char *toks)
 {
   char *s;
-
   s = *ps;
   while(s < es && strchr(whitespace, *s))
     s++;
@@ -369,9 +513,15 @@ parseline(char **ps, char *es)
   struct cmd *cmd;
 
   cmd = parsepipe(ps, es);
-  while(peek(ps, es, "&")){
-    gettoken(ps, es, 0, 0);
-    cmd = backcmd(cmd);
+  //modified for &&, differentiate btw & and && using different return codes
+  if(peek(ps, es, "&")){
+    if(gettoken(ps, es, 0, 0)=='@'){
+        cmd = and_cmd(cmd, parseline(ps, es));
+    }else{
+      
+        gettoken(ps, es, 0, 0);
+        cmd = backcmd(cmd);
+    }
   }
   if(peek(ps, es, ";")){
     gettoken(ps, es, 0, 0);
@@ -386,9 +536,13 @@ parsepipe(char **ps, char *es)
   struct cmd *cmd;
 
   cmd = parseexec(ps, es);
+  //modified for &&, differentiate btw | and || using different return codes
   if(peek(ps, es, "|")){
-    gettoken(ps, es, 0, 0);
-    cmd = pipecmd(cmd, parsepipe(ps, es));
+    if(gettoken(ps, es, 0, 0) == '%'){
+      cmd = or_cmd(cmd, parseline(ps, es));
+    }else{
+      cmd = pipecmd(cmd, parsepipe(ps, es));
+    }
   }
   return cmd;
 }
@@ -501,6 +655,17 @@ nulterminate(struct cmd *cmd)
     break;
 
   case LIST:
+    lcmd = (struct listcmd*)cmd;
+    nulterminate(lcmd->left);
+    nulterminate(lcmd->right);
+    break;
+  //added AND and OR cases
+  case AND:
+    lcmd = (struct listcmd*)cmd;
+    nulterminate(lcmd->left);
+    nulterminate(lcmd->right);
+    break;
+  case OR:
     lcmd = (struct listcmd*)cmd;
     nulterminate(lcmd->left);
     nulterminate(lcmd->right);

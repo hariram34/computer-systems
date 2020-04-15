@@ -1,0 +1,7 @@
+tsort 1 threads
+tsort 4 threads
+tsort 8 threads
+psort 1 threads
+psort 4 threads
+psort 8 threads
+end

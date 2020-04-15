@@ -98,3 +98,26 @@ sys_halt()
   while(1);
   return 0;
 }
+
+
+int
+sys_exit1(void)
+{
+  int arg;
+  int r = argint(0,&arg);
+  if(r<0){
+    return -1;
+  }
+  exit1(arg);
+  return 0;  
+}
+
+int
+sys_wait1(void)
+{
+  int arg;
+  if(argint(0,&arg)<0)
+    return -1;
+  return wait1((int*)arg);
+}
+

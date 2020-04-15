@@ -1,0 +1,50 @@
+Local machine details
+proc model : Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz
+os version : Debian GNU/Linux 10 (buster)
+RAM        : 4 GB
+no of cores : 2
+
+KHOURY machine details
+proc model : Intel(R) Xeon(R) Gold 5118 CPU @ 2.30GHz
+os version : CentOS Linux
+RAM        : 180 GB
+no of cores : 24
+`
+All the tests were run for 50 million floats
++-----------------------------------------------------------------------------------------------+
+|                                         Parallel Sort in Rust                                 |
++-----------------------------------------------+-----------------------------------------------+
+|               Local Machine                   |       CCIS                                    |
++-------------------+----------------+----------+------------------------------------+----------+
+| Number of threads | Time taken (s) | Speed up | Number of threads | Time taken (s) | Speed up |
++-------------------+----------------+----------+-------------------+----------------+----------+
+| 1                 | 18.814         |    1     | 1                 | 22.373         | 1        |
++-------------------+----------------+----------+-------------------+----------------+----------+
+| 4                 | 24.699         | 0.72     | 4                 | 21.542         | 1.047    |
++-------------------+----------------+----------+-------------------+----------------+----------+
+| 8                 | 40.740         | 0.45     | 8                 | 19.457         | 1.15     |
++-------------------+----------------+----------+-------------------+----------------+----------+
+
+Result Analysis: 
+
+From the above table above, we can see that for the local machine the single threaded version performs
+much better than 4 and 8 threads. This is because my machine had only 2 cores and when we try to increase
+the threads we are doing more work in maintaining them. That itself increases the load. To be more precise,
+we have to context switch between multiple threads when hardware does not support it. 
+
+In the CCIS machine there are 24 cores and we can see a speedup. The 8 threads is 1.15 times faster than
+single thread. The 4 threads is 1.047 times faster than the local machine. From this assignment it can be 
+noted that speedup that the threads can offer is limite by the hardware cores present. Hence we could see a 
+better performance in CCIS but not on my local machine.
+
+RUST vs C
+
+Rust clearly has many advantages. It provides threads without data races using the ownership concept and thus making it easier to write a
+multi threaded program much simpler. Which is a great advantage over C. Whereas in C, we had to write a thread safe and lock free code
+in mind. Which is a tedious process. Another advantage over C is user friendly syntax(let x = 1), where in C the each statement had complex syntax. 
+Another advantage of Rust is the memory used is freed when scope exits. Whereas in C, memory had to be carefully freed.
+
+C has some useful advantages over RUST. it offers more control in low level programming. Programming embedded devices is easier using,
+ where low level access is quite frequent. And since C is itsef a low level language, the overheads of RUST is more than C.
+C could appear complex and expect everything to be manually handled, but which itself offers great control in programming 
+devices with very limited resources.
